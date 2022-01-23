@@ -19,6 +19,8 @@ import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { COFFEE_BRANDS } from './coffees.constants';
 import { Public } from '../common/decorators/public.decorator';
+import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
+import { Protocol } from '../common/decorators/protocol.decorator';
 
 @UsePipes(ValidationPipe)
 @Controller('coffees')
@@ -44,14 +46,17 @@ export class CoffeesController {
   @Public()
   @UsePipes(ValidationPipe)
   @Get()
-  findAll(@Query() paginationQuery: PaginationQueryDto) {
-    // const { limit, offset } = paginationQuery;
+  async findAll(
+    @Protocol('https') protocol,
+    @Query() paginationQuery: PaginationQueryDto,
+  ) {
+    // console.log(protocol); // we can log the protocol from the @Protocol decorator
     return this.coffeesService.findAll(paginationQuery);
   }
 
   @Get(':id')
   // @HttpCode(HttpStatus.GONE) // to set a constant response http code
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.coffeesService.findOne(id);
   }
 
