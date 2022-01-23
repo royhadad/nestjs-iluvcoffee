@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  SetMetadata,
   UsePipes,
   ValidationPipe,
   // Res,
@@ -21,7 +20,9 @@ import { COFFEE_BRANDS } from './coffees.constants';
 import { Public } from '../common/decorators/public.decorator';
 import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
 import { Protocol } from '../common/decorators/protocol.decorator';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('coffees')
 @UsePipes(ValidationPipe)
 @Controller('coffees')
 export class CoffeesController {
@@ -43,6 +44,7 @@ export class CoffeesController {
   // }
 
   // GET with query
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Public()
   @UsePipes(ValidationPipe)
   @Get()
@@ -54,6 +56,7 @@ export class CoffeesController {
     return this.coffeesService.findAll(paginationQuery);
   }
 
+  @ApiResponse({ status: 404, description: 'Coffee #N not found' })
   @Get(':id')
   // @HttpCode(HttpStatus.GONE) // to set a constant response http code
   findOne(@Param('id', ParseIntPipe) id: number) {
