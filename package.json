@@ -27,7 +27,7 @@
     "posttest:e2e": "npm run test:e2e:teardown",
     "local-db-start": "docker-compose --file ./docker-compose-services.yaml up -d db",
     "local-db-stop": "docker-compose --file ./docker-compose-services.yaml stop db",
-    "ci-guard": "npm run lint-ci && npm run test && npm run test:e2e && echo \"CI GUARD PASSED!\""
+    "ci-guard": "npm run lint-ci && npm run test && npm run test:e2e && tput setaf 2; echo \"CI GUARD PASSED!\""
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

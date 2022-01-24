@@ -3,6 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
 
+// this e2e test relies on the local dev db to be up
+// make sure you spin it up using "npm run local-db-start"
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
