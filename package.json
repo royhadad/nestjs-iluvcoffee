@@ -18,9 +18,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "pretest:e2e": "docker-compose --file ./docker-compose-services.yaml up -d test-db",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "local-db-start": "docker-compose --file ./docker-compose-services.yaml up -d ",
-    "local-db-stop": "docker-compose --file ./docker-compose-services.yaml stop"
+    "posttest:e2e": "docker-compose --file ./docker-compose-services.yaml stop test-db && docker-compose --file ./docker-compose-services.yaml rm -f test-db",
+    "local-db-start": "docker-compose --file ./docker-compose-services.yaml up -d db",
+    "local-db-stop": "docker-compose --file ./docker-compose-services.yaml stop db"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

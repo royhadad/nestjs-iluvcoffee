@@ -1,13 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 // import { WrapResponseInterceptor } from './common/interceptors/wrap-response.interceptor';
 // import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+function applyBuildingBlocksToApp(app: INestApplication): void {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -24,6 +23,11 @@ async function bootstrap() {
     // new WrapResponseInterceptor(), // to add the wrap response interceptor
     // new TimeoutInterceptor(), // to add the TimeoutInterceptor
     ();
+}
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  applyBuildingBlocksToApp(app);
 
   // setup basic swagger
   const options = new DocumentBuilder()
