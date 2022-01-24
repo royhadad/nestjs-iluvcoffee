@@ -1,4 +1,9 @@
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  HttpServer,
+  HttpStatus,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import { CoffeesModule } from '../../src/coffees/coffees.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -40,14 +45,9 @@ describe('[Feature] Coffees - /coffees', () => {
       coffee.flavors.map((name) => expect.objectContaining({ name })),
     ),
   });
-  const updateCoffeeDto: UpdateCoffeeDto = {
-    name: 'roy new name',
-  };
-  const expectedPartialCoffeeAfterPatch = expect.objectContaining({
-    ...updateCoffeeDto,
-  });
 
   let app: INestApplication;
+  let httpServer: HttpServer;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -70,10 +70,11 @@ describe('[Feature] Coffees - /coffees', () => {
     applyBuildingBlocksToApp(app);
 
     await app.init();
+    httpServer = app.getHttpServer();
   });
 
   it('Create [POST /]', () => {
-    return request(app.getHttpServer())
+    return request(httpServer)
       .post('/coffees')
       .send(coffee)
       .expect(HttpStatus.CREATED)
@@ -83,7 +84,7 @@ describe('[Feature] Coffees - /coffees', () => {
   });
 
   it('Get all [GET /]', () => {
-    return request(app.getHttpServer())
+    return request(httpServer)
       .get('/coffees')
       .send()
       .expect(HttpStatus.OK)
@@ -94,8 +95,8 @@ describe('[Feature] Coffees - /coffees', () => {
   });
 
   it('Get one [GET /:id]', () => {
-    return request(app.getHttpServer())
-      .get(`/coffees/${1}`)
+    return request(httpServer)
+      .get('/coffees/1')
       .send()
       .expect(HttpStatus.OK)
       .then(({ body }) => {
@@ -104,22 +105,34 @@ describe('[Feature] Coffees - /coffees', () => {
   });
 
   it('Update one [PATCH /:id]', () => {
-    return request(app.getHttpServer())
-      .patch(`/coffees/${1}`)
+    const updateCoffeeDto: UpdateCoffeeDto = {
+      name: 'roy new name',
+    };
+
+    return request(httpServer)
+      .patch('/coffees/1')
       .send(updateCoffeeDto)
       .expect(HttpStatus.OK)
       .then(({ body }) => {
-        expect(body).toEqual(expectedPartialCoffeeAfterPatch);
+        expect(body.name).toEqual(updateCoffeeDto.name);
+
+        return request(httpServer)
+          .get('/coffees/1')
+          .then(({ body }) => {
+            expect(body.name).toEqual(updateCoffeeDto.name);
+          });
       });
   });
 
   it('Delete one [DELETE /:id]', () => {
-    return request(app.getHttpServer())
-      .delete(`/coffees/${1}`)
+    return request(httpServer)
+      .delete('/coffees/1')
       .send()
       .expect(HttpStatus.OK)
-      .then(({ body }) => {
-        expect(body).toEqual(expectedPartialCoffeeAfterPatch);
+      .then(() => {
+        return request(httpServer)
+          .get('/coffees/1')
+          .expect(HttpStatus.NOT_FOUND);
       });
   });
 
