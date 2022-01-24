@@ -9,6 +9,7 @@ export class Flavor {
   @Column()
   name: string;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @ManyToMany((type) => Coffee, (coffee) => coffee.flavors)
   coffees: Coffee[];
 }

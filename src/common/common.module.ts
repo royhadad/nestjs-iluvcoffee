@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
   providers: [{ provide: APP_GUARD, useClass: ApiKeyGuard }],
 })
 export class CommonModule implements NestModule {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   configure(consumer: MiddlewareConsumer): void {
     // apply a middleware:
     // consumer.apply(LoggingMiddleware).forRoutes('*'); // just path
