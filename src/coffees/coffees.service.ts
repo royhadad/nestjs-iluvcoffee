@@ -47,7 +47,7 @@ export class CoffeesService {
     const coffee = this.coffeeRepository.create({
       ...createCoffeeDto,
       flavors,
-    });
+    } as any);
     return this.coffeeRepository.save(coffee);
   }
   async update(id: number, updateCoffeeDto: UpdateCoffeeDto) {
@@ -61,7 +61,7 @@ export class CoffeesService {
       id,
       ...updateCoffeeDto,
       flavors,
-    });
+    } as any);
     if (!coffee) {
       throw new NotFoundException(`Coffee #${id} not found`);
     }

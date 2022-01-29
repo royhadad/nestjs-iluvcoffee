@@ -1,21 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoffeesService } from './coffees.service';
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Flavor } from './entities/flavor.entity';
 import { Coffee } from './entities/coffee.entity';
 import { coffeesConfig } from './config/coffees.config';
 import { NotFoundException } from '@nestjs/common';
+import { createMockRepository, MockRepository } from '../utils/mockUtils';
 
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-const createMockRepository = <T = any>(): MockRepository<T> => ({
-  findOne: jest.fn(),
-  create: jest.fn(),
-});
+const testCoffee: Coffee = {
+  id: 1,
+  name: 'Test Coffee',
+  flavors: [],
+  brand: 'Test Brand',
+  description: 'Test Description',
+  recommendations: 0,
+};
+
+type MockCoffeeRepository = MockRepository<Coffee>;
 
 describe('CoffeesService', () => {
   let service: CoffeesService;
-  let coffeeRepository: MockRepository;
+  let coffeeRepository: MockCoffeeRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,7 +41,9 @@ describe('CoffeesService', () => {
     }).compile();
 
     service = module.get<CoffeesService>(CoffeesService);
-    coffeeRepository = module.get<MockRepository>(getRepositoryToken(Coffee));
+    coffeeRepository = module.get<MockCoffeeRepository>(
+      getRepositoryToken(Coffee),
+    );
   });
 
   it('should be defined', () => {
@@ -46,7 +54,7 @@ describe('CoffeesService', () => {
     describe('when coffee with ID exists', () => {
       it('should return the coffee object', async () => {
         const coffeeId = 1;
-        const expectedCoffee = {};
+        const expectedCoffee = testCoffee;
 
         coffeeRepository.findOne.mockReturnValue(expectedCoffee);
         const coffee = await service.findOne(coffeeId);
